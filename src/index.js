@@ -5,6 +5,7 @@ import { errorHandler } from "../middlewares/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
+import routers from "./routes/routes.js";
 
 dotenv.config();
 
@@ -28,6 +29,9 @@ const swaggerDocument = YAML.load(
   path.join(process.cwd(), "swagger/swagger.yml")
 );
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Router 연결
+app.use("/", routers);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
