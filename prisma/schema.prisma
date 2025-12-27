@@ -7,85 +7,94 @@ datasource db {
 }
 
 model changeReason {
-  id                  Int                 @id @default(autoincrement())
-  emotion_id          Int
-  content             String?             @db.VarChar(500)
-  created_at          DateTime?           @db.DateTime(0)
-  userSelectedEmotion userSelectedEmotion @relation(fields: [emotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_changeReason_emotion")
+  id         Int      @id @default(autoincrement())
+  emotion_id Int
+  content    String?  @db.VarChar(500)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  userSelectedEmotion userSelectedEmotion @relation(fields: [emotion_id], references: [id], map: "FK_changeReason_emotion")
 
   @@index([emotion_id], map: "FK_changeReason_emotion")
 }
 
 model isAnalysis {
-  id                Int                 @id @default(autoincrement())
-  post_id           Int                 @unique(map: "UQ_analysis_post")
-  result            isAnalysis_result?
-  created_at        DateTime?           @db.DateTime(0)
-  post              post                @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_analysis_post")
+  id        Int      @id @default(autoincrement())
+  post_id   Int      @unique(map: "UQ_analysis_post")
+  result    isAnalysis_result?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post              post                @relation(fields: [post_id], references: [id], map: "FK_analysis_post")
   isAnalyzedEmotion isAnalyzedEmotion[]
 }
 
 model isAnalyzedEmotion {
-  id          Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   Analysis_id Int
-  name        String?    @db.VarChar(50)
-  percentage  Decimal?   @db.Decimal(5, 2)
-  isAnalysis  isAnalysis @relation(fields: [Analysis_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_analyzedEmotion_analysis")
+  name        String?  @db.VarChar(50)
+  percentage  Decimal? @db.Decimal(5, 2)
+
+  isAnalysis isAnalysis @relation(fields: [Analysis_id], references: [id], map: "FK_analyzedEmotion_analysis")
 
   @@index([Analysis_id], map: "FK_analyzedEmotion_analysis")
   @@index([name], map: "IDX_analyzedEmotion_name")
 }
 
 model post {
-  id                  Int                   @id @default(autoincrement())
-  user_id             Int
-  yearStatus_id       Int
-  date                DateTime?             @db.DateTime(0)
-  title               String?               @db.VarChar(100)
-  photo               String?               @db.Text
-  content             String?               @db.Text
-  created_at          DateTime?             @db.DateTime(0)
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  yearStatus_id Int
+  date          DateTime? @db.DateTime(0)
+  title         String?   @db.VarChar(100)
+  photo         String?   @db.Text
+  content       String?   @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt      @map("updated_at")
+
   isAnalysis          isAnalysis?
-  user                user                  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_post_user")
-  yearStatus          yearStatus            @relation(fields: [yearStatus_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_post_yearStatus")
+  user                user        @relation(fields: [user_id], references: [id], map: "FK_post_user")
+  yearStatus          yearStatus  @relation(fields: [yearStatus_id], references: [id], map: "FK_post_yearStatus")
   userSelectedEmotion userSelectedEmotion[]
 
   @@index([user_id], map: "FK_post_user")
   @@index([yearStatus_id], map: "FK_post_yearStatus")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model user {
-  id         Int          @id @default(autoincrement())
-  nickname   String       @unique(map: "UQ_user_nickname") @db.VarChar(15)
-  created_at DateTime     @db.DateTime(0)
+  id         Int      @id @default(autoincrement())
+  nickname   String   @unique(map: "UQ_user_nickname") @db.VarChar(15)
+  createdAt  DateTime @default(now()) @map("created_at")
+
   post       post[]
   yearStatus yearStatus[]
 }
 
 model userSelectedEmotion {
-  id           Int            @id @default(autoincrement())
-  post_id      Int
-  name         String?        @db.VarChar(50)
-  percentage   Decimal?       @db.Decimal(5, 2)
-  is_saved     Boolean?
+  id         Int      @id @default(autoincrement())
+  post_id    Int
+  name       String?  @db.VarChar(50)
+  percentage Decimal? @db.Decimal(5, 2)
+  is_saved   Boolean?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt      @map("updated_at")
+
   changeReason changeReason[]
-  post         post           @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_userSelectedEmotion_post")
+  post         post @relation(fields: [post_id], references: [id], map: "FK_userSelectedEmotion_post")
 
   @@index([post_id], map: "FK_userSelectedEmotion_post")
   @@index([name], map: "IDX_userSelectedEmotion_name")
 }
 
 model yearStatus {
-  id         Int       @id @default(autoincrement())
-  user_id    Int
-  year       Int
-  emotion    String?   @db.VarChar(50)
-  count      Int?
-  isAi       Boolean?
-  updated_at DateTime? @db.DateTime(0)
-  post       post[]
-  user       user      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_yearStatus_user")
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  year      Int
+  emotion   String?  @db.VarChar(50)
+  count     Int?
+  isAi      Boolean?
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post post[]
+  user user @relation(fields: [user_id], references: [id], map: "FK_yearStatus_user")
 
   @@unique([user_id, year], map: "UQ_yearStatus_user_year")
 }
