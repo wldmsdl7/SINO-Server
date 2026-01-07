@@ -1,14 +1,17 @@
 openapi: 3.0.0
 info:
-  title: [제목]
+  title: SINO
   version: 1.0.0
-  description: "[설명]"
+  description: "의미있는 신호(SIGNAL)는 남기고, 불필요한 잡음(NOISE)은 줄이자"
 
 servers:
-  - description: "[서버 설명]"
+  - description: "로컬 서버"
     url: http://localhost:3000/docs
+  - description: "배포 서버"
+    url: http://3.34.200.244:3000/docs
 
 paths:
+  paths:
   /api/auth/signup:
     post:
       summary: 회원가입
@@ -23,13 +26,9 @@ paths:
               properties:
                 nickname:
                   type: string
-                  description: 닉네임
-                password:
-                  type: string
-                  description: 비밀번호
+                  description: 닉네임 (unique)
               required:
                 - nickname
-                - password
       responses:
         "200":
           description: 회원가입 완료
@@ -46,34 +45,9 @@ paths:
                     type: object
                     properties:
                       id:
-                        type: string
+                        type: integer
         "409":
           description: 이미 존재하는 사용자
-        "500":
-          description: 서버 내부 오류
-
-  /api/auth/login:
-    post:
-      summary: 로그인
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nickname:
-                  type: string
-                password:
-                  type: string
-              required:
-                - nickname
-                - password
-      responses:
-        "200":
-          description: 로그인 완료
           content:
             application/json:
               schema:
@@ -81,16 +55,20 @@ paths:
                 properties:
                   success:
                     type: boolean
+                  statusCode:
+                    type: integer
                   message:
                     type: string
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-        "401":
-          description: 로그인 정보 불일치
-        "404":
-          description: 존재하지 않는 사용자
         "500":
           description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  statusCode:
+                    type: integer
+                  message:
+                    type: string

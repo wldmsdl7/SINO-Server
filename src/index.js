@@ -17,9 +17,6 @@ app.use(express.static("public")); // 정적 파일 접근
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
-// 에러 핸들링
-app.use(errorHandler);
-
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -32,6 +29,9 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Router 연결
 app.use("/", routers);
+
+// 에러 핸들링
+app.use(errorHandler);
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
