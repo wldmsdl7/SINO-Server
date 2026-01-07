@@ -1,13 +1,15 @@
-export const userSignUp = async (nickname) => {
-  const joinUserId = await addUser({
-    nickname: nickname,
-  });
+import { ExistsError } from "../../errors.js";
+import { getUserByNick, addUser } from "../repositories/user.repository.js";
 
-  if (joinUserId === null) {
-    throw new Error("이미 존재하는 이메일입니다.");
+export const userSignUp = async (nickname) => {
+  const existUser = await getUserByNick(nickname);
+
+  console.log(existUser);
+
+  if (existUser) {
+    throw new ExistsError("이미 존재하는 사용자입니다.");
   }
 
-  const user = await getUser(joinUserId);
-
-  return responseFromUser({ user, preferences });
+  const newUser = await addUser(nickname);
+  return newUser;
 };
