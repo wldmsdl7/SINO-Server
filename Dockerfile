@@ -11,5 +11,5 @@ COPY . .
 # 3. 포트 노출
 EXPOSE 3000
 
-# 4. 앱 실행
-CMD ["npm", "start"]
+# 4. 앱 실행 전에 Prisma Client 생성
+CMD sh -c "npx prisma generate && npm start"
