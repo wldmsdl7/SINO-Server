@@ -1,15 +1,12 @@
-FROM node:20-alpine
+FROM node:20
 WORKDIR /app
 
-# 1. 패키지 설치
 COPY package*.json ./
 RUN npm install
 
-# 2. 전체 소스 복사
 COPY . .
 
-# 3. 포트 노출
-EXPOSE 3000
+RUN npx prisma generate
 
-# 4. 앱 실행 전에 Prisma Client 생성
-CMD sh -c "npx prisma generate && npm start"
+EXPOSE 3000
+CMD ["npm", "start"]
