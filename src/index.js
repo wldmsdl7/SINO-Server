@@ -33,6 +33,6 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Router 연결
 app.use("/", routers);
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
