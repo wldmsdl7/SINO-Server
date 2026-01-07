@@ -12,7 +12,7 @@ servers:
 
 paths:
   paths:
-  /api/auth/signup:
+  /api/v1/auth/signup:
     post:
       summary: 회원가입
       tags:
@@ -48,6 +48,71 @@ paths:
                         type: integer
         "409":
           description: 이미 존재하는 사용자
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  statusCode:
+                    type: integer
+                  message:
+                    type: string
+        "500":
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  statusCode:
+                    type: integer
+                  message:
+                    type: string
+  /api/v1/auth/login:
+    post:
+      summary: 로그인
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                  description: 로그인할 닉네임
+              required:
+                - nickname
+      responses:
+        "200":
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                      token:
+                        type: string
+        "404":
+          description: 존재하지 않는 사용자
           content:
             application/json:
               schema:
