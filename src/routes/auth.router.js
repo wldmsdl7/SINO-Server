@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/signup", handleUserSignUp);
 router.post("/login", handleLogin);
-router.post("/check", handleCheck);
+router.get("/check", handleCheck);
 // router.post("/profile", handleProfile);
 
 export default router;
