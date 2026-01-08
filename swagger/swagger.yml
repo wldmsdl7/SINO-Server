@@ -6,9 +6,9 @@ info:
 
 servers:
   - description: "로컬 서버"
-    url: http://localhost:3000/docs
+    url: http://localhost:3000
   - description: "배포 서버"
-    url: http://3.34.200.244:3000/docs
+    url: http://3.34.200.244:3000
 
 paths:
   paths:
