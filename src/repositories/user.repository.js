@@ -1,4 +1,4 @@
-import { prisma } from "../../db.config.js";
+import { prisma } from "../../cofnig/db.config.js";
 
 export const getUserByNick = async (nickname) => {
   return prisma.user.findUnique({
