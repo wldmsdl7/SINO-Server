@@ -14,11 +14,7 @@ const port = process.env.PORT;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://3.34.200.244:3000",
-      "http://3.34.200.244:3000/docs",
-    ],
+    origin: ["http://localhost:3000", "http://3.34.200.244:3000"],
     credentials: true,
   })
 );
