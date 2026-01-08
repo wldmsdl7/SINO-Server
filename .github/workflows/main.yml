@@ -1,0 +1,64 @@
+name: deploy-main
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      #1.코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      #2. Docker Hub 로그인 (옵션)
+      - name: Log in to Docker Hub
+        if: secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      #3. EC2 SSH 키 설정
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          cat >>~/.ssh/config <<END
+          Host sino-server
+            HostName ${{ secrets.EC2_HOST }}
+            User ubuntu
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+          END
+
+      #4. EC2 서버에 Docker 배포
+      - name: Deploy on EC2
+        run: |
+          ssh sino-server <<'EOF'
+            echo "Pulling latest code..."
+            cd ~/SINO-Server || exit
+            git reset --hard
+            git pull origin main
+
+            echo "Stopping old container..."
+            docker stop sino-server || true
+            docker rm sino-server || true
+
+            echo "Building new Docker image..."
+            docker build -t sino-server .
+
+            echo "Running new container..."
+            docker run -d \
+              --name sino-server \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              --env-file /home/ubuntu/SINO-Server/.env \
+              sino-server
+
+            echo "Cleaning up old images..."
+            docker image prune -af
+          EOF
