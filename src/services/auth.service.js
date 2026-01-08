@@ -24,3 +24,12 @@ export const userLogin = async (nickname) => {
 
   return { user: { id: existUser.id }, token };
 };
+
+export const userCheck = async (nickname) => {
+  const existUser = await getUserByNick(nickname);
+
+  // 사용자가 존재하면 true, 존재하지 않으면 false
+  const isExist = !!existUser;
+
+  return !isExist;
+};
